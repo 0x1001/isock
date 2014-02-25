@@ -8,22 +8,22 @@ class Comm(object):
         This class is responsible for low level communication
 
         Constants:
-        ACKNOWLEDGE     - Acknowledge string used to handshake
         BUFFER_SIZE     - Receive buffer size
+        __HANDSHAKE     - Acknowledge string used to handshake
 
         Variable:
     """
-    ACKNOWLEDGE = b'ACKNOWLEDGE'
     BUFFER_SIZE = 8192
+    __HANDSHAKE = b'ISOCK_HANDSHAKE'
 
     def send(self,data):
         """
             This function sends data.
             Transmission protocol:
             <-- data length
-            --> acknowledge
+            --> handshake acknowledge
             <-- data
-            --> acknowledge
+            --> handshake acknowledge
 
             Input:
             date        - data to send
@@ -35,29 +35,29 @@ class Comm(object):
             raise CommException(str(type(data)) + " is wrong type. Data to send has to be string")
 
         data_length = len(data)
-        self._lowLevelSend(str(data_length))
-        data_received = self._lowLevelRecv(len(self.ACKNOWLEDGE))
+        self._send(str(data_length))
+        data_received = self._recv(len(self.__HANDSHAKE))
 
-        if data_received != self.ACKNOWLEDGE:
-            raise CommException("Sending error. Data size. Did not received acknowledge. Received: " + data_received)
+        if data_received != self.__HANDSHAKE:
+            raise CommException("Sending error. Data size. Did not received handshake acknowledge. Received: " + data_received)
 
         sent_data_lenght = 0
         while sent_data_lenght < data_length:
-            sent_data_lenght += self._lowLevelSend(data[sent_data_lenght:])
+            sent_data_lenght += self._send(data[sent_data_lenght:])
 
-        data_received = self._lowLevelRecv(len(self.ACKNOWLEDGE))
+        data_received = self._recv(len(self.__HANDSHAKE))
 
-        if data_received != self.ACKNOWLEDGE:
-            raise CommException("Sending error. Data load. Did not received acknowledge. Received: " + data_received)
+        if data_received != self.__HANDSHAKE:
+            raise CommException("Sending error. Data load. Did not received handshake acknowledge. Received: " + data_received)
 
     def receive(self):
         """
             This function receives data.
             Transmission protocol:
             --> data length
-            <-- acknowledge
+            <-- handshake acknowledge
             --> data
-            <-- acknowledge
+            <-- handshake acknowledge
 
             Input:
             Nothing
@@ -65,20 +65,21 @@ class Comm(object):
             Returns:
             data        - Received data
         """
-        data_received = self._lowLevelRecv(self.BUFFER_SIZE)
+        data_received = self._recv(self.BUFFER_SIZE)
 
         try: data_length = int(data_received)
         except ValueError: raise CommException("Received data length is invalid.")
 
-        self._lowLevelSend(self.ACKNOWLEDGE)
+        self._send(self.__HANDSHAKE)
+
         received_data_length = 0
         data_received = ""
         while received_data_length < data_length:
-            data = self._lowLevelRecv(self.BUFFER_SIZE)
+            data = self._recv(self.BUFFER_SIZE)
             data_received = data_received + data
             received_data_length = len(data_received)
 
-        self._lowLevelSend(self.ACKNOWLEDGE)
+        self._send(self.__HANDSHAKE)
 
         return data_received
 
@@ -92,7 +93,7 @@ class Comm(object):
             Returns:
             Nothing
         """
-        self._lowLevelClose()
+        self._close()
 
     def open(self):
         """
@@ -104,9 +105,9 @@ class Comm(object):
             Returns:
             Nothing
         """
-        self._lowLevelOpen()
+        self._open()
 
-    def _lowLevelRecv(self,buffer):
+    def _recv(self,buffer):
         """
             Low level receive function.
             NOTE: This function has to be overloaded in class that inharits from this
@@ -117,9 +118,9 @@ class Comm(object):
             Returns:
             Received data
         """
-        raise CommException("_lowLevelRecv function not implement")
+        raise CommException("_recv function not implement")
 
-    def _lowLevelSend(self,data):
+    def _send(self,data):
         """
             Low level send function.
             NOTE: This function has to be overloaded in class that inharits from this
@@ -130,9 +131,9 @@ class Comm(object):
             Returns:
             Send data size
         """
-        raise CommException("_lowLevelSend function not implement!")
+        raise CommException("_send function not implement!")
 
-    def _lowLevelOpen(self):
+    def _open(self):
         """
             Low level open socket function
             NOTE: This function has to be overloaded in class that inharits from this
@@ -143,9 +144,9 @@ class Comm(object):
             Returns:
             Nothing
         """
-        raise CommException("_lowLevelOpen function not implement")
+        raise CommException("_open function not implement")
 
-    def _lowLevelClose(self):
+    def _close(self):
         """
             Low level close function.
             NOTE: This function has to be overloaded in class that inharits from this
@@ -156,4 +157,4 @@ class Comm(object):
             Returns:
             Nothing
         """
-        raise CommException("_lowLevelClose function not implement")
+        raise CommException("_close function not implement")

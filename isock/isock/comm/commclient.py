@@ -39,9 +39,9 @@ class CommClient(comm.Comm):
         except socket.error:
             self.close()
             reload(socket)
-            raise CommClientException("Cannot connect to " + ip + ":" + str(port))
+            raise CommClientException(ip + ":" + str(port) + " is not responding.")
 
-    def _lowLevelRecv(self,buffer):
+    def _recv(self,buffer):
         """
             Low level receive function.
 
@@ -58,7 +58,7 @@ class CommClient(comm.Comm):
 
         return data
 
-    def _lowLevelSend(self,data):
+    def _send(self,data):
         """
             Low level send function.
 
@@ -75,7 +75,7 @@ class CommClient(comm.Comm):
 
         return  size
 
-    def _lowLevelClose(self):
+    def _close(self):
         """
             Low level close function.
 
@@ -87,7 +87,7 @@ class CommClient(comm.Comm):
         """
         self.socket_reference.close()
 
-    def _lowLevelOpen(self):
+    def _open(self):
         """
             Low level open function.
 
