@@ -1,9 +1,9 @@
 ######################################################################################
 ################################### Classes ##########################################
 ######################################################################################
-class CommException(Exception): pass
+class LowlevelException(Exception): pass
 
-class Comm(object):
+class Base(object):
     """
         This class is responsible for low level communication
 

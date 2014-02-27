@@ -1,12 +1,12 @@
-import comm
+import base
 
 ######################################################################################
 ################################### Classes ##########################################
 ######################################################################################
 
-class CommClientException(comm.CommException): pass
+class BaseClientException(base.LowlevelException): pass
 
-class CommClient(comm.Comm):
+class BaseClient(base.Base):
     """
         This class is responsible for Client communication
 
