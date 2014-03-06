@@ -1,6 +1,23 @@
 ################################################################################
 ################################### Constants ##################################
 ################################################################################
+VERSION = "1.0.0"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 REQUEST_QUEUE_SIZE = 10
 
 ################################################################################
@@ -34,27 +51,3 @@ def server_factory(ip,port,request_handler,socket_server=None):
         raise CommServerException(str(error))
 
     return server_handle
-
-def sendAndReceive(ip,port,data_to_send,retry=3):
-    """
-        This function sends and receives frames from server
-
-        Input:
-        data_to_send    - frame to send
-
-        Returns:
-        Received data
-    """
-    connection = CommClient()
-    try:
-        connection.connect(ip,port)
-        connection.send(data_to_send)
-        data_received = connection.receive()
-        connection.close()
-    except comm.CommException as error:
-        if retry == 0: raise CommClientException(error)
-        print str(error) + "  Retrying ... " + str(retry)
-        retry -= 1
-        data_received = sendAndReceive(ip,port,data_to_send,retry)
-
-    return data_received

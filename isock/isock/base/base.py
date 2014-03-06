@@ -1,7 +1,7 @@
 ######################################################################################
 ################################### Classes ##########################################
 ######################################################################################
-class LowlevelException(Exception): pass
+class ISockBaseException(Exception): pass
 
 class Base(object):
     """
@@ -32,14 +32,14 @@ class Base(object):
             Nothing
         """
         if not isinstance(data, str):
-            raise CommException(str(type(data)) + " is wrong type. Data to send has to be string")
+            raise ISockBaseException(str(type(data)) + " is wrong type. Data to send has to be string")
 
         data_length = len(data)
         self._send(str(data_length))
         data_received = self._recv(len(self.__HANDSHAKE))
 
         if data_received != self.__HANDSHAKE:
-            raise CommException("Sending error. Data size. Did not received handshake acknowledge. Received: " + data_received)
+            raise ISockBaseException("Sending error. Data size. Did not received handshake acknowledge. Received: " + data_received)
 
         sent_data_lenght = 0
         while sent_data_lenght < data_length:
@@ -48,7 +48,7 @@ class Base(object):
         data_received = self._recv(len(self.__HANDSHAKE))
 
         if data_received != self.__HANDSHAKE:
-            raise CommException("Sending error. Data load. Did not received handshake acknowledge. Received: " + data_received)
+            raise ISockBaseException("Sending error. Data load. Did not received handshake acknowledge. Received: " + data_received)
 
     def receive(self):
         """
@@ -68,7 +68,7 @@ class Base(object):
         data_received = self._recv(self.BUFFER_SIZE)
 
         try: data_length = int(data_received)
-        except ValueError: raise CommException("Received data length is invalid.")
+        except ValueError: raise ISockBaseException("Received data length is invalid.")
 
         self._send(self.__HANDSHAKE)
 
@@ -118,7 +118,7 @@ class Base(object):
             Returns:
             Received data
         """
-        raise CommException("_recv function not implement")
+        raise ISockBaseException("_recv function not implement")
 
     def _send(self,data):
         """
@@ -131,7 +131,7 @@ class Base(object):
             Returns:
             Send data size
         """
-        raise CommException("_send function not implement!")
+        raise ISockBaseException("_send function not implement!")
 
     def _open(self):
         """
@@ -144,7 +144,7 @@ class Base(object):
             Returns:
             Nothing
         """
-        raise CommException("_open function not implement")
+        raise ISockBaseException("_open function not implement")
 
     def _close(self):
         """
@@ -157,4 +157,4 @@ class Base(object):
             Returns:
             Nothing
         """
-        raise CommException("_close function not implement")
+        raise ISockBaseException("_close function not implement")

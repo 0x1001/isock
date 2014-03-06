@@ -1,7 +1,13 @@
-import base
+import SocketServer
 
 ################################################################################
 ################################### Classes ####################################
 ################################################################################
-class HandlerException(Exception): pass
-class Handler(base.BaseRequestHandler): pass
+class ServerException(Exception): pass
+
+class Server(SocketServer.ThreadingTCPServer):
+    """
+        Socket Server class
+
+        Variables:
+    """
