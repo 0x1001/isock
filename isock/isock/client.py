@@ -10,7 +10,16 @@ class Client(base.BaseClient):
         Client class
 
         Variables:
+        _ip
+        _port
+        _retry
     """
+    def __init__(self,ip,port,retry=3):
+        self._ip = ip
+        self._port = port
+        self._retry = retry
+
+        super(Client).__init__()
 
     def executeAction(action_class,data=None):
         """
@@ -25,7 +34,7 @@ class Client(base.BaseClient):
         """
 
 
-    def _sendAndReceive(ip,port,data_to_send,retry=3):
+    def _sendAndReceive(data_to_send):
         """
             This function sends and receives data from server
 
@@ -35,16 +44,20 @@ class Client(base.BaseClient):
             Returns:
             Received data
         """
-        connection = CommClient()
-        try:
-            connection.connect(ip,port)
-            connection.send(data_to_send)
-            data_received = connection.receive()
-            connection.close()
-        except comm.CommException as error:
-            if retry == 0: raise CommClientException(error)
-            print str(error) + "  Retrying ... " + str(retry)
-            retry -= 1
-            data_received = sendAndReceive(ip,port,data_to_send,retry)
+        error = None
+        for retry in range(self._retry):
+            conn.open()
+            try:
+                conn.connect(self._ip,self._port)
+                conn.send(data_to_send)
+                data_received = conn.receive()
+            except base.ISockBaseException as error:
+                continue
+            else:
+                break
+            finally:
+                conn.close()
+        else:
+            raise ClientException("Retry limit exceeded. Error: " + str(error))
 
         return data_received

@@ -17,7 +17,6 @@ class BaseClient(base.Base):
     """
     def __init__(self):
         self.socket_reference = None
-        self.open()
 
     def connect(self,ip,port):
         """
@@ -39,7 +38,7 @@ class BaseClient(base.Base):
         except socket.error:
             self.close()
             reload(socket)
-            raise CommClientException(ip + ":" + str(port) + " is not responding.")
+            raise BaseClientException(ip + ":" + str(port) + " is not responding.")
 
     def _recv(self,buffer):
         """
@@ -54,7 +53,7 @@ class BaseClient(base.Base):
         import socket
 
         try: data = self.socket_reference.recv(buffer)
-        except socket.error as error: raise CommClientException(str(error))
+        except socket.error as error: raise BaseClientException(str(error))
 
         return data
 
@@ -71,7 +70,7 @@ class BaseClient(base.Base):
         import socket
 
         try: size = self.socket_reference.send(data)
-        except socket.error as error: raise CommClientException(str(error))
+        except socket.error as error: raise BaseClientException(str(error))
 
         return  size
 
