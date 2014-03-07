@@ -1,66 +1,34 @@
+import base
 ################################################################################
-################################### Classes ####################################
+############################# Classes ##########################################
 ################################################################################
-class ProtocolException(Exception): pass
+class ProtocolException(base.ISockBaseException): pass
 
 ################################################################################
-############### Functions Encode / Decode ######################################
+############################ Functions  ########################################
 ################################################################################
-def frame(cmd,data=None):
+def serialize(data):
     """
         This function creates protocol frame
 
         Input:
-        cmd     - Command
-        data    - Data associated with command
+        data    - Data to serialize
 
         Returns:
-        protocol_data       - Protocol frame
+        serialized data
     """
-    return _encode((cmd,data))
+    import cPickle
+    return cPickle.dumps(data)
 
-def analyze(frame):
+def deserialize(data):
     """
         This function analyzes protocol frame
 
         Input:
-        frame
+        data        - Serialized data
 
         Retruns:
-        command, data
+        deserialized data
     """
-    return _decode(frame)
-
-################################################################################
-############################## Functions #######################################
-################################################################################
-
-def _encode(data):
-    """
-        This function encodes data
-
-        Input:
-        data        - Data to encode
-
-        Returns:
-        data        - Encoded data
-    """
-    import base64
     import cPickle
-
-    return base64.b64encode(cPickle.dumps(data))
-
-def _decode(data):
-    """
-        This function decodes data
-
-        Input:
-        data        - Encoded data
-
-        Returns:
-        data        - Decoded data
-    """
-    import base64
-    import cPickle
-
-    return cPickle.loads(base64.b64decode(data))
+    return cPickle.loads(data)
