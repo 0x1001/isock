@@ -67,6 +67,7 @@ class ServerHandler(base.BaseRequestHandler):
             Returns:
             Nothing
         """
+        import protocol
 
         try: received_data = self.receive()
         except base.ISockBaseException as error: pass #TODO

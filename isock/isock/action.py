@@ -1,13 +1,7 @@
-import SocketServer
+import base
 
 ################################################################################
 ################################### Classes ####################################
 ################################################################################
-class ServerException(Exception): pass
-
-class Server(SocketServer.ThreadingTCPServer):
-    """
-        Socket Server class
-
-        Variables:
-    """
+class ActionException(base.ISockBaseException): pass
+class Action(object):pass

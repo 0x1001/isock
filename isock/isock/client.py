@@ -10,9 +10,9 @@ class Client(base.BaseClient):
         Client class
 
         Variables:
-        _ip
-        _port
-        _retry
+        _ip             - Server ip
+        _port           - Server port
+        _retry          - Retry number
     """
     def __init__(self,ip,port,retry=3):
         self._ip = ip
@@ -21,7 +21,7 @@ class Client(base.BaseClient):
 
         super(Client).__init__()
 
-    def executeAction(action_class,data=None):
+    def executeAction(action_class,data=None): #???????????????????????????????????????????????????????????????????????????????????????????
         """
             This command executes action on server with given data.
 
@@ -32,7 +32,13 @@ class Client(base.BaseClient):
             Returns:
             Received data
         """
+        raw_data  = self._sendAndReceive(base.BaseData().serlialize((action_class,data)))
 
+        receive_action,receive_data = base.BaseData().deserialize(raw_data)
+
+        if isinstance(receive_action,base.ISockBaseException): raise ClientException(receive_action)
+
+        return receive_data
 
     def _sendAndReceive(data_to_send):
         """

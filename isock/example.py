@@ -15,20 +15,20 @@ print Client("localhost",4440).send("aAaAaA")
 
 
 ################################################################################
-from isock import Command
+from isock import Action
 
-class Action1(Command):
+class Action1(Action):
     def action(self,data):
         return data
 
-class Action2(Command):
+class Action2(Action):
     def __init__(self,server_var):
         self.server_var = server_var
 
     def action(self,data):
         pass
 
-class Action3(Command):
+class Action3(Action):
     def action(self,data):
         pass
 
