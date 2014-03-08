@@ -21,7 +21,7 @@ class Client(base.BaseClient):
 
         super(Client).__init__()
 
-    def executeAction(action_class,data=None): #???????????????????????????????????????????????????????????????????????????????????????????
+    def executeAction(action_class,data=None):
         """
             This command executes action on server with given data.
 
@@ -32,13 +32,17 @@ class Client(base.BaseClient):
             Returns:
             Received data
         """
-        raw_data  = self._sendAndReceive(base.BaseData().serlialize((action_class,data)))
+        import isockdata
 
-        receive_action,receive_data = base.BaseData().deserialize(raw_data)
+        isock_data = isockdata.ISockData()
+        isock_data.setActionClass(action_class)
+        isock_data.setInputData(data)
 
-        if isinstance(receive_action,base.ISockBaseException): raise ClientException(receive_action)
+        isock_data.from_string(self._sendAndReceive(isock_data.to_string()))
 
-        return receive_data
+        if isock_data.getException() != None: raise ClientException(isock_data.getException())
+
+        return isock_data.getOutputData()
 
     def _sendAndReceive(data_to_send):
         """

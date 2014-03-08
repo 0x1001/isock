@@ -12,12 +12,12 @@ class Server(base.BaseServer):
         Variables:
         _actions        - List of actions that client can invoke
     """
-    def __init__(self,*args,**kargs):
+    def __init__(self,ip,port):
         import threading
 
         self._actions = []
 
-        super(Server).__init__(*args,**kargs)
+        super(Server).__init__((ip,port),ServerHandler)
 
     def registerAction(self,action):
         """
@@ -55,6 +55,7 @@ class ServerHandler(base.BaseRequestHandler):
         Socket Server handler class
 
         Variables:
+        server      - Socket Server reference
     """
 
     def handle(self):
@@ -67,12 +68,20 @@ class ServerHandler(base.BaseRequestHandler):
             Returns:
             Nothing
         """
-        import protocol
+        import isockdata
 
-        try: received_data = self.receive()
-        except base.ISockBaseException as error: pass #TODO
+        isock_data = isockdata.ISockData()
 
+        try: isock_data.from_string(self.receive())
+        except base.ISockBaseException as error: isock_data.setException(error)
+        else:
+            try: action = self.server.findAction(isock_data.getActionClass())
+            except ServerException as error: isock_data.setException(error)
+            else:
+                try: isock_data.setOutputData(action.action(isock_data.getInputData()))
+                except Exception as error: isock_data.setException(error)
 
+        isock_data.setInputData(None) # Don't send client data back to client.
 
-        try: self.send(received_data)
-        except base.ISockBaseException as error: pass #TODO
+        try: self.send(isock_data.to_string())
+        except base.ISockBaseException as error: pass

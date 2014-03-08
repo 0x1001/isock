@@ -4,7 +4,7 @@ import base
 ################################### Classes ##########################################
 ######################################################################################
 
-class BaseClientException(base.LowlevelException): pass
+class BaseClientException(base.ISockBaseException): pass
 
 class BaseClient(base.Base):
     """

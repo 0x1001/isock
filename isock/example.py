@@ -9,7 +9,7 @@ class Echo(Handler):
         self.close()
 
 
-Server("localhost",4440,Echo).start()
+Server("localhost",4440,Echo).serve_forever()
 
 print Client("localhost",4440).send("aAaAaA")
 
@@ -36,7 +36,7 @@ server = Server("localhost",4440)
 server.registerCommand(Action1())
 server.registerCommand(Action2(server_var))
 server.registerCommand(Action3())
-server.start()
+server.serve_forever()
 
 client = Client("localhost",4440)
 returned_data = client.executeCommand(Action1,data) #echo
