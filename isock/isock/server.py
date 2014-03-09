@@ -17,9 +17,10 @@ class Server(base.BaseServer):
 
         self._actions = []
 
-        base.BaseServer.__init__(self,(ip,port),ServerHandler)
+        try: base.BaseServer.__init__(self,(ip,port),ServerHandler)
+        except base.BaseServerException as error: raise ServerException(error)
 
-    def registerAction(self,action):
+    def registerAction(self,action_object):
         """
             Reqisters server action
 
@@ -29,10 +30,14 @@ class Server(base.BaseServer):
             Returns:
             Nothing
         """
-        try: self.findAction(type(action))
-        except ServerException: self._actions.append(action)
+        import action
+
+        if not isinstance(action_object,action.Action): raise ServerException("Input action object has to be instance of Action class. " + str(type(action_object)))
+
+        try: self.findAction(type(action_object))
+        except ServerException: self._actions.append(action_object)
         else:
-            raise ServerException("Action is already registered. " + str(type(action)))
+            raise ServerException("Action is already registered. " + str(type(action_object)))
 
     def findAction(self,action_class):
         """
