@@ -32,7 +32,7 @@ class ISockData(object):
             Returns:
             Nothing
         """
-        self._input_action = action_class
+        self._action_class = action_class
 
     def getActionClass(self):
         """
@@ -145,5 +145,10 @@ class ISockData(object):
         """
         import cPickle
 
-        try: self = cPickle.loads(string_data)
+        try: data = cPickle.loads(string_data)
         except cPickle.UnpicklingError as error: raise ISockDataException(error)
+
+        self.setActionClass(data.getActionClass())
+        self.setInputData(data.getInputData())
+        self.setOutputData(data.getOutputData())
+        self.setException(data.getException())

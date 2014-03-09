@@ -19,9 +19,9 @@ class Client(base.BaseClient):
         self._port = port
         self._retry = retry
 
-        super(Client).__init__()
+        super(Client,self).__init__()
 
-    def executeAction(action_class,data=None):
+    def executeAction(self,action_class,data=None):
         """
             This command executes action on server with given data.
 
@@ -44,7 +44,7 @@ class Client(base.BaseClient):
 
         return isock_data.getOutputData()
 
-    def _sendAndReceive(data_to_send):
+    def _sendAndReceive(self,data_to_send):
         """
             This function sends and receives data from server
 
@@ -56,17 +56,17 @@ class Client(base.BaseClient):
         """
         error = None
         for retry in range(self._retry):
-            conn.open()
+            self.open()
             try:
-                conn.connect(self._ip,self._port)
-                conn.send(data_to_send)
-                data_received = conn.receive()
+                self.connect(self._ip,self._port)
+                self.send(data_to_send)
+                data_received = self.receive()
             except base.ISockBaseException as error:
                 continue
             else:
                 break
             finally:
-                conn.close()
+                self.close()
         else:
             raise ClientException("Retry limit exceeded. Error: " + str(error))
 

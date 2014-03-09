@@ -17,7 +17,7 @@ class Server(base.BaseServer):
 
         self._actions = []
 
-        super(Server).__init__((ip,port),ServerHandler)
+        base.BaseServer.__init__(self,(ip,port),ServerHandler)
 
     def registerAction(self,action):
         """
@@ -29,7 +29,7 @@ class Server(base.BaseServer):
             Returns:
             Nothing
         """
-        try: findAction(type(action))
+        try: self.findAction(type(action))
         except ServerException: self._actions.append(action)
         else:
             raise ServerException("Action is already registered. " + str(type(action)))
@@ -48,7 +48,6 @@ class Server(base.BaseServer):
             if type(action) == action_class: return action
         else:
             raise ServerException("Cannot find action: " + str(action_class))
-
 
 class ServerHandler(base.BaseRequestHandler):
     """
@@ -72,7 +71,7 @@ class ServerHandler(base.BaseRequestHandler):
 
         isock_data = isockdata.ISockData()
 
-        try: isock_data.from_string(self.receive())
+        try: isock_data.from_string(self.receive());
         except base.ISockBaseException as error: isock_data.setException(error)
         else:
             try: action = self.server.findAction(isock_data.getActionClass())
