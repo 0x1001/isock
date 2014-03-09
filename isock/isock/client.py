@@ -39,8 +39,7 @@ class Client(base.BaseClient):
         isock_data.setInputData(data)
 
         isock_data.from_string(self._sendAndReceive(isock_data.to_string()))
-
-        if isock_data.getException() != None: raise ClientException(isock_data.getException())
+        if isock_data.getException() != None: raise isock_data.getException()
 
         return isock_data.getOutputData()
 
