@@ -1,44 +1,70 @@
+import threading
 from isock import Server
 from isock import Client
-from isock import Handler
-
-class Echo(Handler):
-    def handle(self):
-        data = self.receive()
-        self.send(data)
-        self.close()
-
-
-Server("localhost",4440,Echo).serve_forever()
-
-print Client("localhost",4440).send("aAaAaA")
-
-
-################################################################################
 from isock import Action
 
-class Action1(Action):
+################################################################################
+############################ Server actions ####################################
+################################################################################
+class Echo(Action):
     def action(self,data):
         return data
 
-class Action2(Action):
-    def __init__(self,server_var):
-        self.server_var = server_var
+class Exec(Action):
+    def __init__(self,exec_history):
+        self.exec_history = exec_history
 
     def action(self,data):
-        pass
+        import subprocess
+        self.exec_history.append(data)
+        return subprocess.check_output(data,shell=True)
 
-class Action3(Action):
+class ExecHistory(Action):
+    def __init__(self,exec_history):
+        self.exec_history = exec_history
+
     def action(self,data):
-        pass
+        return self.exec_history
+
+class Time(Action):
+    def action(self,data):
+        import datetime
+        return datetime.datetime.now()
+
+################################################################################
+############################ Server startup ####################################
+################################################################################
+history = []
 
 server = Server("localhost",4440)
-server.registerCommand(Action1())
-server.registerCommand(Action2(server_var))
-server.registerCommand(Action3())
-server.serve_forever()
+server.registerAction(Echo())
+server.registerAction(Exec(history))
+server.registerAction(ExecHistory(history))
+server.registerAction(Time())
+server_thread = threading.Thread(target=server.serve_forever)
+server_thread.start()
+
+################################################################################
+############################ Client session ####################################
+################################################################################
 
 client = Client("localhost",4440)
-returned_data = client.executeCommand(Action1,data) #echo
-returned_data = client.executeCommand(Action2,data)
-returned_data = client.executeCommand(Action3,data)
+
+print "############################# Echo test ################################"
+print client.executeAction(Echo,"Echo test!")
+
+print "############################# Exec test ################################"
+print client.executeAction(Exec,"dir")
+print client.executeAction(Exec,["python","-V"])
+
+print "############################# Exec history #############################"
+print client.executeAction(ExecHistory)
+
+print "############################# Server time ##############################"
+print client.executeAction(Time)
+
+################################################################################
+############################ Server shutdown ###################################
+################################################################################
+server.shutdown()
+server_thread.join()
