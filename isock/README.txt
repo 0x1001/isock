@@ -132,7 +132,7 @@ Default retry arguments is 3. Which allows 3 retries before ClientException is r
 To run action on server use runAction() method which accepts one required argument and one optional: action (Action class ref), data (any pickable data)::
     client.runAction(Echo,"Echo test!")
 
-Client method runAction() returns data send by server.
+Client method runAction() returns data send by server or rasies exception if action ended with exception on server.
 
 iSocket action guide
 --------------------

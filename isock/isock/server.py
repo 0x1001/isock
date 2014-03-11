@@ -20,7 +20,7 @@ class Server(base.BaseServer):
         try: base.BaseServer.__init__(self,(ip,port),ServerHandler)
         except base.BaseServerException as error: raise ServerException(error)
 
-    def registerAction(self,action_object):
+    def addAction(self,action_object):
         """
             Reqisters server action
 

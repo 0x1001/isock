@@ -37,10 +37,10 @@ class Time(Action):
 history = []
 
 server = Server("localhost",4440)
-server.registerAction(Echo())
-server.registerAction(Exec(history))
-server.registerAction(ExecHistory(history))
-server.registerAction(Time())
+server.addAction(Echo())
+server.addAction(Exec(history))
+server.addAction(ExecHistory(history))
+server.addAction(Time())
 server_thread = threading.Thread(target=server.serve_forever)
 server_thread.start()
 
@@ -51,17 +51,17 @@ server_thread.start()
 client = Client("localhost",4440)
 
 print "############################# Echo test ################################"
-print client.executeAction(Echo,"Echo test!")
+print client.runAction(Echo,"Echo test!")
 
 print "############################# Exec test ################################"
-print client.executeAction(Exec,"dir")
-print client.executeAction(Exec,["python","-V"])
+print client.runAction(Exec,"dir")
+print client.runAction(Exec,["python","-V"])
 
 print "############################# Exec history #############################"
-print client.executeAction(ExecHistory)
+print client.runAction(ExecHistory)
 
 print "############################# Server time ##############################"
-print client.executeAction(Time)
+print client.runAction(Time)
 
 ################################################################################
 ############################ Server shutdown ###################################

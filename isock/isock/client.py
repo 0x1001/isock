@@ -21,7 +21,7 @@ class Client(base.BaseClient):
 
         super(Client,self).__init__()
 
-    def executeAction(self,action_class,data=None):
+    def runAction(self,action_class,data=None):
         """
             This command executes action on server with given data.
 
