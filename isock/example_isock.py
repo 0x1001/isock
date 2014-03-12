@@ -55,7 +55,7 @@ print client.runAction(Echo,"Echo test!")
 
 print "############################# Exec test ################################"
 print client.runAction(Exec,"dir")
-print client.runAction(Exec,["python","-V"])
+print client.runAction(Exec,"python -V")
 
 print "############################# Exec history #############################"
 print client.runAction(ExecHistory)
@@ -67,4 +67,5 @@ print client.runAction(Time)
 ############################ Server shutdown ###################################
 ################################################################################
 server.shutdown()
+server.server_close()
 server_thread.join()

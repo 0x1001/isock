@@ -33,6 +33,10 @@ class Client(base.BaseClient):
             Received data
         """
         import isockdata
+        import action
+        import inspect
+
+        if not inspect.isclass(action_class) or not issubclass(action_class,action.Action): raise ClientException("First method argument must be Action subclass.")
 
         isock_data = isockdata.ISockData()
         isock_data.setActionClass(action_class)

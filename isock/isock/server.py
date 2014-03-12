@@ -32,7 +32,7 @@ class Server(base.BaseServer):
         """
         import action
 
-        if not isinstance(action_object,action.Action): raise ServerException("Input action object has to be instance of Action class. " + str(type(action_object)))
+        if not isinstance(action_object,action.Action): raise ServerException("Input action object has to be instance of Action subclass. " + str(type(action_object)))
 
         try: self.findAction(type(action_object))
         except ServerException: self._actions.append(action_object)

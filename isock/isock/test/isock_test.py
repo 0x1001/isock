@@ -31,6 +31,7 @@ class IsockBasicTest(unittest.TestCase):
 
     def tearDown(self):
         self.server.shutdown()
+        self.server.server_close()
         self.thread.join()
 
     def test_isockBasic(self):
@@ -58,7 +59,9 @@ class ISockServerExceptionTeste(unittest.TestCase):
         thread.start()
 
         server.shutdown()
+        server.server_close()
 
+class ISockPortTaken(unittest.TestCase):
     def test_exceptionPortTaken(self):
         import threading
         server = isock.Server("localhost",4442)
@@ -69,6 +72,7 @@ class ISockServerExceptionTeste(unittest.TestCase):
         thread = threading.Thread(target=server.serve_forever)
         thread.start()
         server.shutdown()
+        server.server_close()
 
 class ISockClientExceptionTest(unittest.TestCase):
     def setUp(self):
@@ -82,6 +86,7 @@ class ISockClientExceptionTest(unittest.TestCase):
 
     def tearDown(self):
         self.server.shutdown()
+        self.server.server_close()
         self.thread.join()
 
     def test_isockBasic(self):
@@ -109,6 +114,7 @@ class IsockActionTest(unittest.TestCase):
 
     def tearDown(self):
         self.server.shutdown()
+        self.server.server_close()
         self.thread.join()
 
     def test_actionTest(self):
@@ -123,6 +129,33 @@ class IsockActionTest(unittest.TestCase):
 
         received_data = client.runAction(_echo,data_to_send)
         self.assertEqual(data_to_send,received_data)
+
+class IsockClientActionException(unittest.TestCase):
+    def setUp(self):
+        import threading
+
+        try: self.server = isock.Server("localhost",4445)
+        except isock.ServerException as error: self.fail("Init Error" + str(error))
+
+        self.thread = threading.Thread(target=self.server.serve_forever)
+        self.thread.start()
+
+    def tearDown(self):
+        self.server.shutdown()
+        self.server.server_close()
+        self.thread.join()
+
+    def test_clientActionTest(self):
+        client = isock.Client("localhost",4445)
+
+        data_to_send = "dummy"
+
+        with self.assertRaises(isock.ClientException):
+            received_data = client.runAction(_echo(),data_to_send)
+
+        with self.assertRaises(isock.ClientException):
+            received_data = client.runAction(None,data_to_send)
+
 
 if __name__ == '__main__':
     unittest.main()
