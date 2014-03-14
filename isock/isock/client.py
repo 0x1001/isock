@@ -5,7 +5,7 @@ import base
 ################################################################################
 class ClientException(base.BaseClientException): pass
 
-class Client(base.BaseClient):
+class Client(object):
     """
         Client class
 
@@ -18,8 +18,6 @@ class Client(base.BaseClient):
         self._ip = ip
         self._port = port
         self._retry = retry
-
-        super(Client,self).__init__()
 
     def runAction(self,action_class,data=None):
         """
@@ -57,19 +55,20 @@ class Client(base.BaseClient):
             Returns:
             Received data
         """
+        client = base.BaseClient()
         error = None
         for retry in range(self._retry):
-            self.open()
+            client.open()
             try:
-                self.connect(self._ip,self._port)
-                self.send(data_to_send)
-                data_received = self.receive()
+                client.connect(self._ip,self._port)
+                client.send(data_to_send)
+                data_received = client.receive()
             except base.ISockBaseException as error:
                 continue
             else:
                 break
             finally:
-                self.close()
+                client.close()
         else:
             raise ClientException("Retry limit exceeded. Error: " + str(error))
 
