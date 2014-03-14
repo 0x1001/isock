@@ -1,6 +1,9 @@
 import unittest
 import isock
 
+######################################################################################
+################################### Helper Classes ###################################
+######################################################################################
 class _echo(isock.Action):
     def action(self,data):
         return data
@@ -12,9 +15,13 @@ class _serverVar(isock.Action):
     def action(self,data):
         return self.server_variable
 
-class _notAction(object): pass
+class _notAction1(object): pass
+class _notAction2: pass
 
-class IsockBasicTest(unittest.TestCase):
+######################################################################################
+################################### Test Classes #####################################
+######################################################################################
+class ISockBasic(unittest.TestCase):
     def setUp(self):
         import threading
 
@@ -34,7 +41,7 @@ class IsockBasicTest(unittest.TestCase):
         self.server.server_close()
         self.thread.join()
 
-    def test_isockBasic(self):
+    def test_ISockBasic(self):
         client = isock.Client("localhost",4440)
         data_to_send = "dummy"
         received_data = client.runAction(_echo,data_to_send)
@@ -43,17 +50,23 @@ class IsockBasicTest(unittest.TestCase):
         received_data = client.runAction(_serverVar)
         self.assertEqual("dummy",received_data)
 
-class ISockServerExceptionTeste(unittest.TestCase):
-    def test_exceptionAction(self):
+class ISockServerException(unittest.TestCase):
+    def test_ISockServerException(self):
         import threading
-        server = isock.Server("localhost",4441)
+
+        try: server = isock.Server("localhost",4441)
+        except isock.ServerException as error: self.fail("Init Error" + str(error))
+
         server.addAction(_echo())
 
         with self.assertRaises(isock.ServerException):
             server.addAction(_echo())
 
         with self.assertRaises(isock.ServerException):
-            server.addAction(_notAction())
+            server.addAction(_notAction1())
+
+        with self.assertRaises(isock.ServerException):
+            server.addAction(_notAction2())
 
         thread = threading.Thread(target=server.serve_forever)
         thread.start()
@@ -62,9 +75,11 @@ class ISockServerExceptionTeste(unittest.TestCase):
         server.server_close()
 
 class ISockPortTaken(unittest.TestCase):
-    def test_exceptionPortTaken(self):
+    def test_ISockPortTaken(self):
         import threading
-        server = isock.Server("localhost",4442)
+
+        try: server = isock.Server("localhost",4442)
+        except isock.ServerException as error: self.fail("Init Error" + str(error))
 
         with self.assertRaises(isock.ServerException):
             server2 = isock.Server("localhost",4442)
@@ -74,7 +89,7 @@ class ISockPortTaken(unittest.TestCase):
         server.shutdown()
         server.server_close()
 
-class ISockClientExceptionTest(unittest.TestCase):
+class ISockClientException(unittest.TestCase):
     def setUp(self):
         import threading
 
@@ -89,20 +104,20 @@ class ISockClientExceptionTest(unittest.TestCase):
         self.server.server_close()
         self.thread.join()
 
-    def test_isockBasic(self):
+    def test_ISockClientException(self):
         client = isock.Client("localhost",4443)
 
         with self.assertRaises(isock.ServerException):
             received_data = client.runAction(_echo)
 
-class ISockClientRetryTest(unittest.TestCase):
-    def test_retry(self):
+class ISockClientRetry(unittest.TestCase):
+    def test_ISockClientRetry(self):
         client = isock.Client("localhost",4444)
 
         with self.assertRaises(isock.ClientException):
             received_data = client.runAction(_echo)
 
-class IsockActionTest(unittest.TestCase):
+class ISockAction(unittest.TestCase):
     def setUp(self):
         import threading
 
@@ -117,7 +132,7 @@ class IsockActionTest(unittest.TestCase):
         self.server.server_close()
         self.thread.join()
 
-    def test_actionTest(self):
+    def test_ISockAction(self):
         client = isock.Client("localhost",4445)
 
         data_to_send = "dummy"
@@ -130,11 +145,11 @@ class IsockActionTest(unittest.TestCase):
         received_data = client.runAction(_echo,data_to_send)
         self.assertEqual(data_to_send,received_data)
 
-class IsockClientActionException(unittest.TestCase):
+class ISockActionException(unittest.TestCase):
     def setUp(self):
         import threading
 
-        try: self.server = isock.Server("localhost",4445)
+        try: self.server = isock.Server("localhost",4446)
         except isock.ServerException as error: self.fail("Init Error" + str(error))
 
         self.thread = threading.Thread(target=self.server.serve_forever)
@@ -145,8 +160,8 @@ class IsockClientActionException(unittest.TestCase):
         self.server.server_close()
         self.thread.join()
 
-    def test_clientActionTest(self):
-        client = isock.Client("localhost",4445)
+    def test_ISockActionException(self):
+        client = isock.Client("localhost",4446)
 
         data_to_send = "dummy"
 
@@ -155,7 +170,6 @@ class IsockClientActionException(unittest.TestCase):
 
         with self.assertRaises(isock.ClientException):
             received_data = client.runAction(None,data_to_send)
-
 
 if __name__ == '__main__':
     unittest.main()
